@@ -13,23 +13,25 @@ const phaseOne = [
 	"i",
 	"me",
 	"mine"
-]
+];
 
-const beginnings = [
-	" ",
-	"'",
-	'"'
-]
-
-const endings = [
-	" ",
-	",",
-	".",
-	"!",
-	"?",
+const capitalizers = [
 	"'",
 	'"'
 ];
+const beginnings = [
+	" ",
+].concat(capitalizers);
+
+const endOfSentence = [
+	".",
+	"?",
+	"!"
+];
+const endings = [
+	" ",
+	",",
+].concat(capitalizers, endOfSentence);
 
 let all = [];
 translations.forEach((c) => {
@@ -46,17 +48,17 @@ translations.forEach((c) => {
 			if (hasSuf) {
 				for (let prefix of beginnings) {
 					for (let suffix of endings) {
-						all.push([prefix + operator(k) + suffix, prefix + operator(v) + suffix, prefix, suffix]);
+						all.push([operator(k), operator(v), prefix, suffix]);
 					}
 				}
 			} else {
 				for (let prefix of beginnings) {
-					all.push([prefix + operator(k), prefix + operator(v), prefix, ""]);
+					all.push([operator(k), operator(v), prefix, ""]);
 				}
 			}
 		} else if (hasSuf) {
 			for (let suffix of endings) {
-				all.push([operator(k) + suffix, operator(v) + suffix, "", suffix]);
+				all.push([operator(k), operator(v), "", suffix]);
 			}
 		}
 	}
@@ -113,25 +115,39 @@ function fix(s, strikethrough) {
 		};
 
 		for (let c of all) {
-			const cIndex = s.indexOf(c[0], i);
+			const cIndex = s.indexOf(c[2] + c[0] + c[3], i);
 			if (cIndex >= 0 && cIndex < next.index) {
 				next = { index: cIndex, c: c };
 			}
 		}
 		if (next.c) {
 			i = next.index;
+			const pre = next.c[2];
+			const suf = next.c[3];
 			let replacement = next.c[1];
-			if (i > 1) {
-				replacement = replacement.toLowerCase();
-			}
-			if (strikethrough) {
-				const pre = next.c[2];
-				const suf = next.c[3];
 
-				replacement = pre + "<del>" + next.c[0].trim() + "</del>" + suf +
-					" " + pre + "<strong>" + replacement.trim() + "</strong>" + suf;
+			let capitalize = i <= 1;
+			if (!capitalize) {
+				if (pre.length > 0) {
+					capitalizers.forEach(b => {
+						if (pre === b) capitalize = true;
+					});
+				}
+				if (!capitalize) {
+					endOfSentence.forEach(b => {
+						if (s[i - 1] === b) capitalize = true;
+					});
+				}
 			}
-			s = s.substr(0, i) + replacement + s.substr(i + next.c[0].length);
+			if (!capitalize) replacement = replacement.toLowerCase();
+
+			if (strikethrough) {
+				replacement = pre + "<del>" + next.c[0].trim() + "</del>" +
+					" <strong>" + replacement.trim() + "</strong>" + suf;
+			} else {
+				replacement = pre + replacement + suf;
+			}
+			s = s.substr(0, i) + replacement + s.substr(i + pre.length + next.c[0].length + suf.length);
 			i += replacement.length;
 		} else {
 			return s;
