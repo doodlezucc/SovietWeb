@@ -1,19 +1,34 @@
 const translations = [
 	[" my", "our"],
-	[" me ", "us"],
+	//[" me ", "us"],
 	[" mine ", "ours"],
 	[" mine", "our"],
-	[" i'm ", "we're"],
+	//[" i'm ", "we're"],
 	//[" i'", "we'"],
-	[" i ", "we"],
+	//[" i ", "we"],
+	[" your", "our"],
+
+	[" meinen ", "unseren"],
+	[" meine ", "unsere"],
+	[" mein ", "unser"],
+	[" deinen ", "unseren"],
+	[" deine ", "unsere"],
+	[" dein ", "unser"],
 ];
 
 const phaseOne = [
 	"my",
-	"i",
 	"me",
-	"mine"
+	"mine",
+
+	"mein",
+	"dein"
 ];
+
+const timers = {
+	minimizeArray: 0,
+	walkText: 0
+};
 
 const capitalizers = [
 	"'",
@@ -26,7 +41,8 @@ const beginnings = [
 const endOfSentence = [
 	".",
 	"?",
-	"!"
+	"!",
+	":"
 ];
 const endings = [
 	" ",
@@ -87,6 +103,7 @@ function communize() {
 	});
 
 	console.log("Communized in " + (new Date() - start) + "ms");
+	//console.log(timers);
 }
 
 function needsFix(s) {
@@ -104,6 +121,18 @@ function needsFix(s) {
  * @param {String} s 
  */
 function fix(s, strikethrough) {
+	let start = new Date();
+
+	const used = [];
+	for (let c of all) {
+		if (s.includes(c[0])) {
+			used.push(c);
+		}
+	}
+
+	timers.minimizeArray += new Date() - start;
+	start = new Date();
+
 	s = " " + s + " ";
 
 	let i = 0;
@@ -114,7 +143,7 @@ function fix(s, strikethrough) {
 			c: null
 		};
 
-		for (let c of all) {
+		for (let c of used) {
 			const cIndex = s.indexOf(c[2] + c[0] + c[3], i);
 			if (cIndex >= 0 && cIndex < next.index) {
 				next = { index: cIndex, c: c };
@@ -161,6 +190,7 @@ function fix(s, strikethrough) {
 
 			s = s.substr(0, i) + part + s.substr(end);
 		} else {
+			timers.walkText += new Date() - start;
 			return s;
 		}
 	}
