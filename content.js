@@ -24,6 +24,13 @@ const phaseOne = [
 	"dein"
 ];
 
+const disabledTags = [
+	"STYLE",
+	"SCRIPT",
+	"NOSCRIPT",
+	"META"
+];
+
 const capitalizers = [
 	"'",
 	'"'
@@ -117,7 +124,6 @@ function fix(s, boldText) {
 	}
 
 	s = " " + s + " ";
-
 	let i = 0;
 
 	while (true) {
@@ -184,7 +190,7 @@ function fixDocument() {
 	const start = new Date();
 
 	$(document).find("*").each(function() {
-		if (!(this instanceof HTMLScriptElement)) {
+		if (!disabledTags.some(tag => this.tagName === tag)) {
 			const isTitle = this instanceof HTMLTitleElement;
 			const texts = $(this).textNodes();
 			texts.each(function() {
@@ -199,12 +205,10 @@ function fixDocument() {
 // Whenever a child is added, try to fix its text content
 const observer = new MutationObserver(function(mutationsList, observer) {
 	for (let mutation of mutationsList) {
-		if (mutation.type === 'childList') {
-			for (let node of mutation.addedNodes) {
-				$(node).find("*").textNodes().each(function() {
-					fixIfNeeded(this);
-				});
-			}
+		for (let node of mutation.addedNodes) {
+			$(node).find("*").textNodes().each(function() {
+				fixIfNeeded(this);
+			});
 		}
 	}
 });
