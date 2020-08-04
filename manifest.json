@@ -3,6 +3,9 @@
 	"description": "Hippity hoppity all words are now our property",
 	"version": "1.0",
 	"manifest_version": 2,
+	"icons": {
+		"512": "icon.png"
+	},
 	"content_scripts": [
 		{
 			"matches": [
