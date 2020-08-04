@@ -95,8 +95,9 @@ function communize() {
 			const isTitle = this instanceof HTMLTitleElement;
 			const texts = $(this).textNodes();
 			texts.each(function() {
-				if (needsFix(this.data)) {
-					$(this).replaceWith(fix(this.data, !isTitle));
+				const trim = this.data.trim();
+				if (needsFix(trim)) {
+					$(this).replaceWith(fix(trim, !isTitle));
 				}
 			});
 		}
@@ -171,7 +172,9 @@ function fix(s, strikethrough) {
 			}
 
 			if (strikethrough) {
-				replacement = pre + "<del>" + next.c[0].trim() + "</del> <strong>" +
+				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
+				// 	replacement.trim() + "</strong>" + suf;
+				replacement = pre + '<strong title="' + next.c[0] + '">' +
 					replacement.trim() + "</strong>" + suf;
 			} else {
 				replacement = pre + replacement + suf;
