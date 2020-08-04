@@ -8,14 +8,13 @@ const translations = [
 	//[" i ", "we"],
 	[" your", "our"],
 
-	[" meinen ", "unseren"],
-	[" meine ", "unsere"],
-	[" mein ", "unser"],
-	[" deinen ", "unseren"],
-	[" deine ", "unsere"],
-	[" dein ", "unser"],
+	[" mein", "unser"],
+	[" dein", "unser"],
 ];
 
+/**
+ * Keywords that validate if a text node needs any fixing
+ */
 const phaseOne = [
 	"my",
 	"mine",
@@ -24,11 +23,6 @@ const phaseOne = [
 	"mein",
 	"dein"
 ];
-
-const timers = {
-	minimizeArray: 0,
-	walkText: 0
-};
 
 const capitalizers = [
 	"'",
@@ -49,6 +43,9 @@ const endings = [
 	",",
 ].concat(capitalizers, endOfSentence);
 
+/**
+ * Every possible combination of prefixes/suffixes on every "translation"
+ */
 let all = [];
 translations.forEach((c) => {
 	let k = c[0];
@@ -91,54 +88,33 @@ function fixIfNeeded(element, isTitle) {
 	const trim = element.data.trim();
 	if (needsFix(trim)) {
 		$(element).replaceWith(fix(trim, !isTitle));
-	} else {
-		//$(this).replaceWith(trim);
 	}
 }
 
-function communize() {
-	const start = new Date();
-
-	$(document).find("*").each(function() {
-		if (!(this instanceof HTMLScriptElement)) {
-			const isTitle = this instanceof HTMLTitleElement;
-			const texts = $(this).textNodes();
-			texts.each(function() {
-				fixIfNeeded(this, isTitle);
-			});
-		}
-	});
-
-	console.log("Communized in " + (new Date() - start) + "ms");
-	//console.log(timers);
-}
-
 function needsFix(s) {
-	s = s.toLowerCase();
-	for (let word of phaseOne) {
-		if (s.includes(word)) {
-			return true;
-		}
-	};
+	if (s.length) {
+		s = s.toLowerCase();
+		for (let word of phaseOne) {
+			if (s.includes(word)) {
+				return true;
+			}
+		};
+	}
 	return false;
 }
 
 /**
- * 
- * @param {String} s 
+ * Remove all sense of property from a string.
+ * @param {String} s String to fix.
+ * @param {boolean} boldText Enable extra formatting (bold and italics).
  */
-function fix(s, strikethrough) {
-	let start = new Date();
-
+function fix(s, boldText) {
 	const used = [];
 	for (let c of all) {
 		if (s.includes(c[0])) {
 			used.push(c);
 		}
 	}
-
-	timers.minimizeArray += new Date() - start;
-	start = new Date();
 
 	s = " " + s + " ";
 
@@ -177,7 +153,7 @@ function fix(s, strikethrough) {
 				if (!capitalize) replacement = replacement.toLowerCase();
 			}
 
-			if (strikethrough) {
+			if (boldText) {
 				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
 				// 	replacement.trim() + "</strong>" + suf;
 				replacement = pre + '<strong title="' + next.c[0] + '"><i>' +
@@ -199,30 +175,28 @@ function fix(s, strikethrough) {
 
 			s = s.substr(0, i) + part + s.substr(end);
 		} else {
-			timers.walkText += new Date() - start;
 			return s;
 		}
 	}
 }
 
-//Add a jQuery extension so it can be used on any jQuery object
-jQuery.fn.textNodes = function() {
-	return this.contents().filter(function() {
-		return (this.nodeType === Node.TEXT_NODE && this.nodeValue.trim() !== "");
+function fixDocument() {
+	const start = new Date();
+
+	$(document).find("*").each(function() {
+		if (!(this instanceof HTMLScriptElement)) {
+			const isTitle = this instanceof HTMLTitleElement;
+			const texts = $(this).textNodes();
+			texts.each(function() {
+				fixIfNeeded(this, isTitle);
+			});
+		}
 	});
+
+	console.log("Communized in " + (new Date() - start) + "ms");
 }
 
-$(document).ready(function() {
-	communize();
-});
-
-// Select the node that will be observed for mutations
-const targetNode = document.body;
-
-// Options for the observer (which mutations to observe)
-const config = { childList: true, subtree: true };
-
-// Create an observer instance linked to the callback function
+// Whenever a child is added, try to fix its text content
 const observer = new MutationObserver(function(mutationsList, observer) {
 	for (let mutation of mutationsList) {
 		if (mutation.type === 'childList') {
@@ -234,6 +208,16 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 		}
 	}
 });
+observer.observe(document.body, { childList: true, subtree: true });
 
-// Start observing the target node for configured mutations
-observer.observe(targetNode, config);
+// Add a jQuery extension so it can be used on any jQuery object
+jQuery.fn.textNodes = function() {
+	return this.contents().filter(function() {
+		return (this.nodeType === Node.TEXT_NODE);
+	});
+}
+
+// Fix the entire document as soon as possible
+$(document).ready(function() {
+	fixDocument();
+});
