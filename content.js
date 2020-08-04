@@ -174,8 +174,8 @@ function fix(s, strikethrough) {
 			if (strikethrough) {
 				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
 				// 	replacement.trim() + "</strong>" + suf;
-				replacement = pre + '<strong title="' + next.c[0] + '">' +
-					replacement.trim() + "</strong>" + suf;
+				replacement = pre + '<strong title="' + next.c[0] + '"><i>' +
+					replacement.trim() + "</i></strong>" + suf;
 			} else {
 				replacement = pre + replacement + suf;
 			}
@@ -207,9 +207,7 @@ jQuery.fn.textNodes = function() {
 }
 
 $(document).ready(function() {
-	setTimeout(() => {
-		communize();
-	}, 1000);
+	communize();
 });
 
 // Select the node that will be observed for mutations
