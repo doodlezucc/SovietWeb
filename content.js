@@ -87,6 +87,15 @@ translations.forEach((c) => {
 });
 //console.log(all);
 
+function fixIfNeeded(element, isTitle) {
+	const trim = element.data.trim();
+	if (needsFix(trim)) {
+		$(element).replaceWith(fix(trim, !isTitle));
+	} else {
+		//$(this).replaceWith(trim);
+	}
+}
+
 function communize() {
 	const start = new Date();
 
@@ -95,10 +104,7 @@ function communize() {
 			const isTitle = this instanceof HTMLTitleElement;
 			const texts = $(this).textNodes();
 			texts.each(function() {
-				const trim = this.data.trim();
-				if (needsFix(trim)) {
-					$(this).replaceWith(fix(trim, !isTitle));
-				}
+				fixIfNeeded(this, isTitle);
 			});
 		}
 	});
@@ -214,27 +220,20 @@ $(document).ready(function() {
 const targetNode = document.body;
 
 // Options for the observer (which mutations to observe)
-const config = { attributes: true, childList: true, subtree: true };
-
-// Callback function to execute when mutations are observed
-const callback = function(mutationsList, observer) {
-	// Use traditional 'for loops' for IE 11
-	console.log("hmmm");
-	for (let mutation of mutationsList) {
-		if (mutation.type === 'childList') {
-			console.log('A child node has been added or removed.');
-		}
-		else if (mutation.type === 'attributes') {
-			console.log('The ' + mutation.attributeName + ' attribute was modified.');
-		}
-	}
-};
+const config = { childList: true, subtree: true };
 
 // Create an observer instance linked to the callback function
-const observer = new MutationObserver(callback);
+const observer = new MutationObserver(function(mutationsList, observer) {
+	for (let mutation of mutationsList) {
+		if (mutation.type === 'childList') {
+			for (let node of mutation.addedNodes) {
+				$(node).find("*").textNodes().each(function() {
+					fixIfNeeded(this);
+				});
+			}
+		}
+	}
+});
 
 // Start observing the target node for configured mutations
 observer.observe(targetNode, config);
-
-// Later, you can stop observing
-observer.disconnect();
