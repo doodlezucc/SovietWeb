@@ -18,8 +18,8 @@ const translations = [
 
 const phaseOne = [
 	"my",
-	"me",
 	"mine",
+	"your",
 
 	"mein",
 	"dein"
@@ -114,9 +114,9 @@ function communize() {
 }
 
 function needsFix(s) {
-	s = " " + s.toLowerCase() + " ";
+	s = s.toLowerCase();
 	for (let word of phaseOne) {
-		if (s.includes(" " + word)) {
+		if (s.includes(word)) {
 			return true;
 		}
 	};
