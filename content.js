@@ -13,7 +13,7 @@ const translations = [
 ];
 
 /**
- * Keywords that validate if a text node needs any fixing
+ * Keywords that roughly validate if a text node needs any fixing
  */
 const phaseOne = [
 	"my",
@@ -206,13 +206,45 @@ function fixDocument() {
 const observer = new MutationObserver(function(mutationsList, observer) {
 	for (let mutation of mutationsList) {
 		for (let node of mutation.addedNodes) {
-			$(node).find("*").textNodes().each(function() {
-				fixIfNeeded(this);
-			});
+			// In case 'node' is a text node, fix it, otherwise, fix its descendants
+			if (node.nodeType === Node.TEXT_NODE) {
+				if (node.data.trim() === "") {
+					continue;
+				}
+
+				// All that sibling stuff right here should only affect ultimate-guitar.com
+				// For some reason, they reset every single word of a song's lyrics everytime you hover over a chord,
+				// which would result in both the original and the fixed text being displayed. Tis but a workaround!
+				let sib = node.nextElementSibling;
+				if (sib) {
+					console.log(node.previousElementSibling);
+					console.log(sib);
+					if (sib.nodeType === Node.TEXT_NODE && sib.data.trim() === "") {
+						sib = sib.nextSibling;
+					}
+					console.log(sib);
+					if (sib && sib.nodeName === "STRONG") {
+						if (sib.title === node.data) {
+							node.remove();
+							continue;
+						}
+					}
+				}
+
+				console.log("Fixing " + node.data.trim());
+				fixIfNeeded(node);
+			} else {
+				// Don't bother checking Stalin elements
+				if (node.firstChild && node.nodeName === "STRONG" && node.firstChild.nodeName === "I") {
+					continue;
+				}
+				$(node).find("*").textNodes().each(function() {
+					fixIfNeeded(this);
+				});
+			}
 		}
 	}
 });
-observer.observe(document.body, { childList: true, subtree: true });
 
 // Add a jQuery extension so it can be used on any jQuery object
 jQuery.fn.textNodes = function() {
@@ -224,4 +256,5 @@ jQuery.fn.textNodes = function() {
 // Fix the entire document as soon as possible
 $(document).ready(function() {
 	fixDocument();
+	observer.observe(document.body, { childList: true, subtree: true });
 });
