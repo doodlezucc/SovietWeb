@@ -93,6 +93,8 @@ translations.forEach((c) => {
 //console.log(all);
 
 function fixIfNeeded(element, isTitle) {
+	if (killSwitch) return;
+
 	const trim = element.data.trim();
 	if (needsFix(trim)) {
 		$(element).replaceWith(fix(trim, !isTitle));
@@ -163,7 +165,7 @@ function fix(s, boldText) {
 			if (boldText) {
 				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
 				// 	replacement.trim() + "</strong>" + suf;
-				replacement = pre + '<stalin title="' + next.c[0] + '">' +
+				replacement = pre + '<stalin style="font-weight: bold;font-style: italic" title="' + next.c[0] + '">' +
 					replacement.trim() + "</stalin>" + suf;
 			} else {
 				replacement = pre + replacement + suf;
@@ -208,11 +210,18 @@ function fixDocument() {
 		}
 	});
 
-	console.log("Communized in " + (new Date() - start) + "ms");
+	log("Communized in " + (new Date() - start) + "ms");
 }
 
 // Whenever a child is added, try to fix its text content
 const observer = new MutationObserver(function(mutationsList, observer) {
+	if (killSwitch) return;
+
+	mutationCounter++;
+	if (mutationCounter >= 50) {
+		kill();
+	}
+
 	for (let mutation of mutationsList) {
 		for (let node of mutation.addedNodes) {
 			// In case 'node' is a text node, fix it, otherwise, fix its descendants
@@ -234,8 +243,30 @@ jQuery.fn.textNodes = function() {
 	});
 }
 
+function log(s) {
+	console.log("☭ - " + s);
+}
+
+let mutationCounter = 0;
+let killSwitch = false;
+/**
+ * Forces the app to stop modifying nodes for a short time.
+ */
+function kill() {
+	log("Disabled communism due to recursion");
+	killSwitch = true;
+	setTimeout(() => {
+		killSwitch = false;
+		log("Restarted communism");
+	}, 1000);
+}
+
 // Fix the entire document as soon as possible
 $(document).ready(function() {
 	fixDocument();
 	observer.observe(document.body, { childList: true, subtree: true });
+
+	setInterval(() => {
+		mutationCounter = 0;
+	}, 200);
 });
