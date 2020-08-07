@@ -162,8 +162,8 @@ function fix(s, boldText) {
 			if (boldText) {
 				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
 				// 	replacement.trim() + "</strong>" + suf;
-				replacement = pre + '<strong title="' + next.c[0] + '"><i>' +
-					replacement.trim() + "</i></strong>" + suf;
+				replacement = pre + '<stalin title="' + next.c[0] + '">' +
+					replacement.trim() + "</stalin>" + suf;
 			} else {
 				replacement = pre + replacement + suf;
 			}
@@ -208,34 +208,10 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 		for (let node of mutation.addedNodes) {
 			// In case 'node' is a text node, fix it, otherwise, fix its descendants
 			if (node.nodeType === Node.TEXT_NODE) {
-				if (node.data.trim() === "") {
-					continue;
-				}
-
-				// All that sibling stuff right here should only affect ultimate-guitar.com
-				// For some reason, they reset every single word of a song's lyrics everytime you hover over a chord,
-				// which would result in both the original and the fixed text being displayed. Tis but a workaround!
-				let sib = node.nextElementSibling;
-				if (sib) {
-					console.log(node.previousElementSibling);
-					console.log(sib);
-					if (sib.nodeType === Node.TEXT_NODE && sib.data.trim() === "") {
-						sib = sib.nextSibling;
-					}
-					console.log(sib);
-					if (sib && sib.nodeName === "STRONG") {
-						if (sib.title === node.data) {
-							node.remove();
-							continue;
-						}
-					}
-				}
-
-				console.log("Fixing " + node.data.trim());
 				fixIfNeeded(node);
 			} else {
 				// Don't bother checking Stalin elements
-				if (node.firstChild && node.nodeName === "STRONG" && node.firstChild.nodeName === "I") {
+				if (node.firstChild && node.nodeName === "STALIN") {
 					continue;
 				}
 				$(node).find("*").textNodes().each(function() {
