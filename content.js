@@ -28,7 +28,8 @@ const disabledTags = [
 	"STYLE",
 	"SCRIPT",
 	"NOSCRIPT",
-	"META"
+	"META",
+	"STALIN"
 ];
 
 const capitalizers = [
@@ -186,11 +187,19 @@ function fix(s, boldText) {
 	}
 }
 
+/**
+ * Checks if element is of a type that mustn't be fixed
+ * @param {HTMLElement} element 
+ */
+function mayFix(element) {
+	return !disabledTags.some(tag => element.tagName === tag);
+}
+
 function fixDocument() {
 	const start = new Date();
 
 	$(document).find("*").each(function() {
-		if (!disabledTags.some(tag => this.tagName === tag)) {
+		if (mayFix(this)) {
 			const isTitle = this instanceof HTMLTitleElement;
 			const texts = $(this).textNodes();
 			texts.each(function() {
@@ -209,11 +218,7 @@ const observer = new MutationObserver(function(mutationsList, observer) {
 			// In case 'node' is a text node, fix it, otherwise, fix its descendants
 			if (node.nodeType === Node.TEXT_NODE) {
 				fixIfNeeded(node);
-			} else {
-				// Don't bother checking Stalin elements
-				if (node.firstChild && node.nodeName === "STALIN") {
-					continue;
-				}
+			} else if (mayFix(node)) {
 				$(node).find("*").textNodes().each(function() {
 					fixIfNeeded(this);
 				});
