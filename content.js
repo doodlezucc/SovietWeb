@@ -13,7 +13,7 @@ const translations = [
 ];
 
 /**
- * Keywords that roughly validate if a text node needs any fixing
+ * Keywords that roughly validate if a text node needs fixing
  */
 const phaseOne = [
 	"my",
@@ -52,7 +52,7 @@ const endings = [
 ].concat(capitalizers, endOfSentence);
 
 /**
- * Every possible combination of prefixes/suffixes on every "translation"
+ * Every possible combination of prefixes/suffixes for every "translation"
  */
 let all = [];
 translations.forEach((c) => {
@@ -90,7 +90,6 @@ translations.forEach((c) => {
 		push(s => s.toUpperCase());
 	}
 });
-//console.log(all);
 
 function fixIfNeeded(element, isTitle) {
 	if (killSwitch) return;
@@ -114,7 +113,7 @@ function needsFix(s) {
 }
 
 /**
- * Remove all sense of property from a string.
+ * Removes all sense of property from a string.
  * @param {String} s String to fix.
  * @param {boolean} boldText Enable extra formatting (bold and italics).
  */
@@ -190,7 +189,7 @@ function fix(s, boldText) {
 }
 
 /**
- * Checks if element is of a type that mustn't be fixed
+ * Checks if element is of a type that mustn't be fixed.
  * @param {HTMLElement} element 
  */
 function mayFix(element) {
