@@ -1,11 +1,7 @@
 const translations = [
 	[" my", "our"],
-	//[" me ", "us"],
 	[" mine ", "ours"],
 	[" mine", "our"],
-	//[" i'm ", "we're"],
-	//[" i'", "we'"],
-	//[" i ", "we"],
 	[" your", "our"],
 
 	[" mein", "unser"],
@@ -146,21 +142,6 @@ function fix(s, boldText) {
 			const suf = next.c[3];
 			let replacement = next.c[1];
 
-			let capitalize = i <= 1;
-			if (next.c[0][0].toLowerCase() === "i" && !capitalize) {
-				if (pre.length > 0) {
-					capitalizers.forEach(b => {
-						if (pre === b) capitalize = true;
-					});
-				}
-				if (!capitalize) {
-					endOfSentence.forEach(b => {
-						if (s[i - 1] === b) capitalize = true;
-					});
-				}
-				if (!capitalize) replacement = replacement.toLowerCase();
-			}
-
 			if (boldText) {
 				// replacement = pre + "<del>" + next.c[0] + "</del> <strong>" +
 				// 	replacement.trim() + "</strong>" + suf;
@@ -171,17 +152,6 @@ function fix(s, boldText) {
 			}
 			s = s.substr(0, i) + replacement + s.substr(i + pre.length + next.c[0].length + suf.length);
 			i += replacement.length;
-
-			let end = s.length;
-			endOfSentence.forEach(ending => {
-				let e = s.indexOf(ending, i);
-				if (e >= i && e < end) end = e;
-			});
-			let part = s.slice(i, end);
-			part = (" " + part).replace(">", "").replace(" am", " are").replace(" was", " were");
-			part = part.substr(1);
-
-			s = s.substr(0, i) + part + s.substr(end);
 		} else {
 			return s;
 		}
