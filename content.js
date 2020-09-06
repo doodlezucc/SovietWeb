@@ -230,12 +230,40 @@ function kill() {
 	}, 1000);
 }
 
+let initialJobs = 2;
+
+function maybeInit() {
+	if (--initialJobs == 0) {
+		fixDocument();
+		observer.observe(document.body, { childList: true, subtree: true });
+
+		setInterval(() => {
+			mutationCounter = 0;
+		}, 200);
+	}
+}
+
+chrome.storage.local.get(["profile"], function(result) {
+	let profile = {
+		enable: true,
+	};
+	if (!$.isEmptyObject(result)) {
+		profile = result["profile"];
+	}
+	if (profile.enable) {
+		maybeInit();
+	}
+});
+
 // Fix the entire document as soon as possible
 $(document).ready(function() {
-	fixDocument();
-	observer.observe(document.body, { childList: true, subtree: true });
+	maybeInit();
+});
 
-	setInterval(() => {
-		mutationCounter = 0;
-	}, 200);
+chrome.runtime.onMessage.addListener(function(request, sender) {
+	if (!sender.tab) {
+		if (request.action === "apply_changes") {
+			maybeInit();
+		}
+	}
 });
