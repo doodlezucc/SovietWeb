@@ -1,3 +1,10 @@
+const blacklist = [
+	"www.youtube.com",
+	"music.youtube.com",
+	"tabs.ultimate-guitar.com",
+	"docs.google.com",
+];
+
 const translations = [
 	[" my", "our"],
 	[" mine ", "ours"],
@@ -245,7 +252,7 @@ function maybeInit() {
 
 chrome.storage.local.get(["profile"], function(result) {
 	let profile = {
-		disabledPages: [],
+		disabledPages: blacklist,
 	};
 	if (!$.isEmptyObject(result)) {
 		profile = result["profile"];

@@ -1,7 +1,14 @@
+const blacklist = [
+    "www.youtube.com",
+    "music.youtube.com",
+    "tabs.ultimate-guitar.com",
+    "docs.google.com",
+];
+
 let enable;
 
 let profile = {
-    disabledPages: [],
+    disabledPages: blacklist,
 };
 
 let domain = "";
@@ -65,7 +72,18 @@ $(document).ready(() => {
     chrome.tabs.query({ currentWindow: true, active: true }, tabs => {
         const active = tabs[0];
         domain = getDomain(active.url);
-        $("#label").text(domain);
+        $("#label").html("Communize <b>" + domain + "</b>?");
+        if (blacklist.some(s => s === domain)) {
+            $("#warning").addClass("show");
+        }
         load();
     });
 });
+
+function reset() {
+    chrome.storage.local.clear(function() {
+        console.log("Cleared storage!");
+    });
+}
+
+//reset();

@@ -24,10 +24,6 @@
 			],
 			"matches": [
 				"<all_urls>"
-			],
-			"exclude_matches": [
-				"*://*.youtube.com/*",
-				"*://tabs.ultimate-guitar.com/tab/*"
 			]
 		}
 	]
