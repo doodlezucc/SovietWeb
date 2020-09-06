@@ -245,12 +245,13 @@ function maybeInit() {
 
 chrome.storage.local.get(["profile"], function(result) {
 	let profile = {
-		enable: true,
+		disabledPages: [],
 	};
 	if (!$.isEmptyObject(result)) {
 		profile = result["profile"];
 	}
-	if (profile.enable) {
+	const domain = getDomain(document.location.href);
+	if (!profile.disabledPages.some(s => s === domain)) {
 		maybeInit();
 	}
 });
@@ -267,3 +268,12 @@ chrome.runtime.onMessage.addListener(function(request, sender) {
 		}
 	}
 });
+
+/**
+ * @param {String} url 
+ */
+function getDomain(url) {
+	url = url.substr(url.indexOf("//") + 2);
+	url = url.substr(0, url.indexOf("/"));
+	return url;
+}

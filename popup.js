@@ -1,18 +1,24 @@
 let enable;
 
 let profile = {
-    enable: true,
+    disabledPages: [],
 };
 
+let domain = "";
+
 function save() {
-    profile.enable = enable[0].checked;
+    if (isChecked()) {
+        profile.disabledPages = profile.disabledPages.filter(s => s !== domain);
+    } else {
+        profile.disabledPages.push(domain);
+    }
+    console.log(profile.disabledPages);
 
     chrome.storage.local.set({ profile: profile }, function() {
         console.log("Saved!");
-        if (profile.enable) {
+        if (isChecked()) {
             chrome.tabs.query({ currentWindow: true, active: true }, function(tabs) {
-                var activeTab = tabs[0];
-                chrome.tabs.sendMessage(activeTab.id, { action: "apply_changes" });
+                chrome.tabs.sendMessage(tabs[0].id, { action: "apply_changes" });
             });
         } else {
             chrome.tabs.reload();
@@ -21,22 +27,45 @@ function save() {
     //window.close();
 }
 
+function isChecked() {
+    return enable[0].checked;
+}
+
+function isDisabled(url) {
+    return profile.disabledPages.some(s => s === url);
+}
+
 function load() {
     chrome.storage.local.get(["profile"], function(result) {
         if (!$.isEmptyObject(result)) {
             profile = result["profile"];
+            console.log(profile.disabledPages);
         }
-        enable[0].checked = profile.enable;
+        enable[0].checked = !isDisabled(domain);
         setTimeout(() => {
             enable.addClass("init");
         }, 100);
     });
 }
 
+/**
+ * @param {String} url 
+ */
+function getDomain(url) {
+    url = url.substr(url.indexOf("//") + 2);
+    url = url.substr(0, url.indexOf("/"));
+    return url;
+}
+
 $(document).ready(() => {
     enable = $("#enable");
-    load();
-    enable.on("change", function() {
-        save();
+    enable.on("change", save);
+
+    // Get current tab URL
+    chrome.tabs.query({ currentWindow: true, active: true }, tabs => {
+        const active = tabs[0];
+        domain = getDomain(active.url);
+        $("#label").text(domain);
+        load();
     });
 });

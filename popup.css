@@ -2,7 +2,7 @@ body {
     display: flex;
     flex-direction: column;
     background-color: white;
-    padding: 4px 5px;
+    padding: 8px 10px;
     font-size: 14px;
     white-space: nowrap;
     margin: 0;
@@ -61,4 +61,16 @@ input:checked + .slider:before {
 }
 .slider.round:before {
     border-radius: 50%;
+}
+
+#label {
+    font-weight: bold;
+}
+#label::before {
+    content: "Communize ";
+    font-weight: normal;
+}
+#label::after {
+    content: "?";
+    font-weight: normal;
 }
