@@ -241,6 +241,7 @@ let initialJobs = 2;
 
 function maybeInit() {
 	if (--initialJobs == 0) {
+		chrome.runtime.sendMessage({ action: "enable" });
 		fixDocument();
 		observer.observe(document.body, { childList: true, subtree: true });
 
