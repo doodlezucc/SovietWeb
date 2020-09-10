@@ -11,20 +11,38 @@ const translations = [
 	[" mine", "our"],
 	[" your", "our"],
 
-	[" mein", "unser"],
-	[" dein", "unser"],
+	[" dude", "comrade"],
+	["friend", "comrade"],
+	[" buddy", "comrade"],
+	[" homie", "comrade"],
+	[" significant other", "comrade"],
+	[" brother", "comrade"],
+	[" bro ", "comrade"],
+	[" sister", "comrade"],
+	[" sis", "comrade"],
+	[" stranger", "comrade"],
+
+	[" meine", "unsere"],
+	[" mein ", "unser"],
+	[" deine", "unsere"],
+	[" dein ", "unser"],
+
+	["freunden", "genossen"],
+	["freunde", "genossen"],
+	["freundin", "genossin"],
+	["freund ", "genosse"],
+	["freund", "genossen"],
+	[" kameradin", "genossin"],
+	["kamerad ", "genosse"],
+	[" kamerad", "genossen"],
 ];
 
 /**
  * Keywords that roughly validate if a text node needs fixing
+ * (just using the translation keys without spaces)
  */
 const phaseOne = [
-	"my",
-	"mine",
-	"your",
-
-	"mein",
-	"dein"
+	...new Set(translations.map(tr => tr[0].trim()))
 ];
 
 const disabledTags = [
@@ -41,6 +59,9 @@ const capitalizers = [
 ];
 const beginnings = [
 	" ",
+	"(",
+	"[",
+	"-"
 ].concat(capitalizers);
 
 const endOfSentence = [
@@ -84,6 +105,8 @@ translations.forEach((c) => {
 			for (let suffix of endings) {
 				all.push([operator(k), operator(v), "", suffix]);
 			}
+		} else {
+			all.push([operator(k), operator(v), "", ""]);
 		}
 	}
 
@@ -93,6 +116,7 @@ translations.forEach((c) => {
 		push(s => s.toUpperCase());
 	}
 });
+//console.log(all);
 
 function fixIfNeeded(element, isTitle) {
 	if (killSwitch) return;
