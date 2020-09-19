@@ -21,20 +21,21 @@ const translations = [
 	[" sister", "comrade"],
 	[" sis", "comrade"],
 	[" stranger", "comrade"],
+	["pal ", "comrade"],
 
 	[" meine", "unsere"],
 	[" mein ", "unser"],
 	[" deine", "unsere"],
 	[" dein ", "unser"],
 
-	["freunden", "genossen"],
-	["freunde", "genossen"],
-	["freundin", "genossin"],
-	["freund ", "genosse"],
-	["freund", "genossen"],
-	[" kameradin", "genossin"],
-	["kamerad ", "genosse"],
-	[" kamerad", "genossen"],
+	/* 	["freunden", "genossen"],
+		["freunde", "genossen"],
+		["freundin", "genossin"],
+		["freund ", "genosse"],
+		["freund", "genossen"],
+		[" kameradin", "genossin"],
+		["kamerad ", "genosse"],
+		[" kamerad", "genossen"], */
 ];
 
 /**
@@ -73,6 +74,9 @@ const endOfSentence = [
 const endings = [
 	" ",
 	",",
+	")",
+	"]",
+	"-"
 ].concat(capitalizers, endOfSentence);
 
 /**
