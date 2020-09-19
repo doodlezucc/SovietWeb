@@ -217,25 +217,38 @@ function fixDocument() {
 	log("Communized in " + (new Date() - start) + "ms");
 }
 
-// Whenever a child is added, try to fix its text content
-const observer = new MutationObserver(function(mutationsList, observer) {
-	if (killSwitch) return;
+/**
+ * In case 'node' is a text node, fix it, otherwise, fix its descendants
+ * @param {Node} node 
+ */
+function fixNode(node) {
+	if (node.nodeType === Node.TEXT_NODE) {
+		fixIfNeeded(node);
+	} else if (mayFix(node)) {
+		$(node).find("*").textNodes().each(function() {
+			fixIfNeeded(this);
+		});
+	}
+}
 
-	mutationCounter++;
-	if (mutationCounter >= 50) {
-		kill();
+let forgottenNodes = [];
+
+// Whenever a child is added, try to fix its text content
+const observer = new MutationObserver(function(mutationsList) {
+	if (!killSwitch) {
+		mutationCounter++;
+		if (mutationCounter >= 50) {
+			kill();
+		}
 	}
 
 	for (let mutation of mutationsList) {
-		for (let node of mutation.addedNodes) {
-			// In case 'node' is a text node, fix it, otherwise, fix its descendants
-			if (node.nodeType === Node.TEXT_NODE) {
-				fixIfNeeded(node);
-			} else if (mayFix(node)) {
-				$(node).find("*").textNodes().each(function() {
-					fixIfNeeded(this);
-				});
+		if (!killSwitch) {
+			for (let node of mutation.addedNodes) {
+				fixNode(node);
 			}
+		} else {
+			forgottenNodes.push(mutation.addedNodes);
 		}
 	}
 });
@@ -257,11 +270,13 @@ let killSwitch = false;
  * Forces the app to stop modifying nodes for a short time.
  */
 function kill() {
-	log("Disabled communism due to recursion");
+	log("Disabled communism due to overflow");
 	killSwitch = true;
 	setTimeout(() => {
 		killSwitch = false;
 		log("Restarted communism");
+		forgottenNodes.forEach((node) => fixNode(node));
+		forgottenNodes = [];
 	}, 1000);
 }
 
