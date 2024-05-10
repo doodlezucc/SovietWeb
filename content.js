@@ -23,6 +23,7 @@ const translations = [
 	[" sis", "comrade"],
 	[" stranger", "comrade"],
 	[" pal ", "comrade"],
+	["pal ", "comrade"],
 
 	//Spanish
 	[" mi" , "nuestro"],
