@@ -6,6 +6,7 @@ const blacklist = [
 ];
 
 const translations = [
+	//English
 	[" my", "our"],
 	[" mine ", "ours"],
 	[" mine", "our"],
@@ -21,21 +22,65 @@ const translations = [
 	[" sister", "comrade"],
 	[" sis", "comrade"],
 	[" stranger", "comrade"],
+	[" pal ", "comrade"],
 	["pal ", "comrade"],
 
+	//Spanish
+	[" mi " , "nuestro"],
+	[" mio ", "nuestro"],
+	[" mia ", "nuestra"],
+	[" mios ", "nuestros"],
+	[" mias ", "nuestras"],
+	[" mí " , "nuestro"],
+	[" mío ", "nuestro"],
+	[" mía ", "nuestra"],
+	[" míos ", "nuestros"],
+	[" mías ", "nuestras"],
+
+	[" tu ", "nuestro"],
+	[" tú ", "nuestro"],
+	[" tuyo ", "nuestro"],
+	[" tuya ", "nuestra"],
+	[" tuyos ", "nuestros"],
+	[" tuyas ", "nuestras"],
+
+	[" su ", "nuestro"],
+	[" sú ", "nuestro"],
+	[" suyo ", "nuestro"],
+	[" suya ", "nuestra"],
+	[" suyos ", "nuestros"],
+	[" suyas ", "nuestras"],
+
+	[" tío ", "camarada"],
+	[" amigo ", "camarada"],
+	[" colega ", "camarada"],
+	[" compañero ", "camarada"],
+	[" pareja ", "camarada"],
+	[" hermano ", "camarada"],
+	[" hermana ", "camarada"],
+	[" desconocido ", "camarada"],
+	[" compadre ", "camarada"],
+	[" pana ", "camarada"],
+	[" asociado ", "camarada"],
+	[" camarada ", "camarada"],
+
+
+	/*
+	//German
 	[" meine", "unsere"],
 	[" mein ", "unser"],
 	[" deine", "unsere"],
 	[" dein ", "unser"],
 
-	/* 	["freunden", "genossen"],
+	 	["freunden", "genossen"],
 		["freunde", "genossen"],
 		["freundin", "genossin"],
 		["freund ", "genosse"],
 		["freund", "genossen"],
 		[" kameradin", "genossin"],
 		["kamerad ", "genosse"],
-		[" kamerad", "genossen"], */
+		[" kamerad", "genossen"], 
+	*/
 ];
 
 /**
